@@ -1,20 +1,32 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'fs/promises';
+import { existsSync } from 'node:fs';
+import { listCleanUp } from '../types/list_type';
 
-const sourcePath = path.join(__dirname, '../', '../', 'sourceFiles');
-const backupRoot = path.join(__dirname, '../../', 'backup/backups');
-
-export const createDir = async (dirPath: string, version: number) => {
-  const restPath = path.relative(sourcePath, dirPath);
-  const backupLocation = path.join(
-    backupRoot,
-    `v${version.toString()}`,
-    restPath,
-  );
-  console.log(backupLocation);
+export const getFilesAndDirectories = async (
+  dirPath: string,
+): Promise<listCleanUp> => {
   try {
-    fs.mkdirSync(backupLocation, { recursive: true });
+    const files = await fs.readdir(dirPath, {
+      withFileTypes: true,
+      recursive: true,
+      encoding: 'utf-8',
+    });
+
+    const dirPaths = [];
+    const filePaths = [];
+
+    for await (const file of files) {
+      const filePath = `${dirPath}/${file.name}`;
+      if (file.isFile()) {
+        filePaths.push(filePath);
+      } else if (file.isDirectory()) {
+        dirPaths.push(filePath);
+      }
+    }
+
+    return { dirPaths, filePaths };
   } catch (err) {
-    console.log('Creating Directory Failed', err);
+    console.log('Error: ', err);
+    throw err;
   }
 };

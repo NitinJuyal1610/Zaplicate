@@ -1,1 +1,4 @@
-hello;
+helooooooooooooooooooooooooo;
+uihgfuih;
+isShorthandPropertyAssignment;
+huiahuih;
