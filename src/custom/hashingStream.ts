@@ -22,7 +22,7 @@ export class HashingStream extends Transform {
     callback: TransformCallback,
   ): void {
     this.hash.update(chunk);
-    callback(null, chunk);
+    callback();
   }
 
   _flush(callback: TransformCallback): void {
