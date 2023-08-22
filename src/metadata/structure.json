@@ -1,0 +1,16 @@
+{
+  "dirName": {
+    "files": [
+      {
+        "fileName": "file.js",
+        "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "fileName": "hi.js",
+        "hash": "3a7a96e8c4207f5bd14d5f1a42590457034d0d9884453fb7e322d3cfded676f1"
+      }
+    ],
+
+    "subDirectories": {}
+  }
+}

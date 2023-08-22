@@ -1,6 +1,6 @@
 //export a interface
 
 export interface listCleanUp {
-  dirPaths: string[];
-  filePaths: string[];
+  subDirNames: string[];
+  fileNames: string[];
 }

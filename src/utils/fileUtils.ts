@@ -12,19 +12,18 @@ export const getFilesAndDirectories = async (
       encoding: 'utf-8',
     });
 
-    const dirPaths = [];
-    const filePaths = [];
+    const subDirNames = [];
+    const fileNames = [];
 
     for await (const file of files) {
-      const filePath = `${dirPath}/${file.name}`;
       if (file.isFile()) {
-        filePaths.push(filePath);
+        fileNames.push(file.name);
       } else if (file.isDirectory()) {
-        dirPaths.push(filePath);
+        subDirNames.push(file.name);
       }
     }
 
-    return { dirPaths, filePaths };
+    return { subDirNames, fileNames };
   } catch (err) {
     console.log('Error: ', err);
     throw err;
