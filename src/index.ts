@@ -16,20 +16,21 @@ import path from 'path';
   try {
     const dirPath = args.dirPath;
     //args demo parameters
-    const recursive = false;
+    const recursive = true;
     const minSize = parseSizeInput('2B');
     const maxSize = parseSizeInput('1MB');
     const fromDate = new Date('2023-08-22');
     const toDate = new Date('2023-08-23');
+    const extensions = ['.txt', '.png', '.js'];
 
     const filterOptions = {
       minSize: minSize,
       maxSize: maxSize,
       fromDate: fromDate,
       toDate: toDate,
+      extensions: extensions,
     };
 
-    // -e, --extensions <ext1,ext2> Filter files by the specified extensions
     // -x, --exclude <path>        Exclude the specified file or directory from cleanup
 
     if (!existsSync(dirPath)) {
@@ -37,7 +38,7 @@ import path from 'path';
       return;
     }
 
-    // non recursive [Todo : filter logic , preview structure ]
+    // non recursive [Todo : preview structure ]
     if (!recursive) {
       const dirName = path.basename(dirPath);
       // get list of the files
@@ -49,25 +50,23 @@ import path from 'path';
         dirPath,
         filterOptions,
       );
-      // const markedFiles = await markToDelete(dirPath, filteredFilePaths);
+
+      console.log(filteredFilePaths);
+      const markedFiles = await markToDelete(dirPath, filteredFilePaths);
 
       //display preview
       // -a, --auto  Automatically remove files without preview
       //delete markedFiles on confirmation
-      // await deleteFiles(dirPath, markedFiles);
+      await deleteFiles(dirPath, markedFiles);
     } else {
       // recursive Case
       //get filtered files from all current state & subdires
       //file names
       const filteredFiles: string[] = [];
 
-      await filterAndListFiles(dirPath, filteredFiles);
-
-      console.log(filteredFiles);
-
+      await filterAndListFiles(dirPath, filteredFiles, filterOptions);
       //mark for deletion
       const markedFiles = await markToDelete(dirPath, filteredFiles);
-
       //preview
       // -a, --auto                  Automatically remove files without preview
       //delete

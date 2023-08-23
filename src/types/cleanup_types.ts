@@ -13,4 +13,5 @@ export interface filterOptions {
   maxSize: number;
   fromDate: Date;
   toDate: Date;
+  extensions: string[];
 }
