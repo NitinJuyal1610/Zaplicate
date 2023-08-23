@@ -45,12 +45,10 @@ export const filterAndListFiles = async (
     filteredFiles.push(filePath);
   }
   //for every subfolder call this function again
-
   for (const subDir of subDirNames) {
     const subDirPath = `${dirPath}/${subDir}`;
     await filterAndListFiles(subDirPath, filteredFiles);
   }
 
   return;
-  //return
 };

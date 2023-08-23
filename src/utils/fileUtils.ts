@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { existsSync } from 'node:fs';
-import { listCleanUp } from '../types/list_type';
-import { fileHash } from '../types/fileHash_type';
+import { filterOptions, listCleanUp } from '../types/cleanup_types';
+import { fileHash } from '../types/cleanup_types';
 
 export const getFilesAndDirectories = async (
   dirPath: string,
@@ -51,12 +51,27 @@ export const deleteFiles = async (parentPath: string, files: string[]) => {
   }
 };
 
-export const filterFiles = async (files: string[], dirPath: string) => {
+export const filterFiles = async (
+  files: string[],
+  dirPath: string,
+  filterOptions: filterOptions,
+) => {
   try {
     const filteredFiles: string[] = [];
     for (const file of files) {
       const filePath = `${dirPath}/${file}`;
-      filteredFiles.push(filePath);
+      const fileStats = await fs.stat(filePath);
+      const modifiedDate = fileStats.mtime;
+
+      if (
+        fileStats.size >= filterOptions.minSize &&
+        fileStats.size <= filterOptions.maxSize &&
+        modifiedDate >= filterOptions.fromDate &&
+        modifiedDate <= filterOptions.toDate
+      ) {
+        filteredFiles.push(filePath);
+      }
+
       // filter and push files pending
     }
     return filteredFiles;

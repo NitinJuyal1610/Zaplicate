@@ -1,6 +1,7 @@
 import args from './utils/yargsUtil';
 import fs from 'fs/promises';
 import { existsSync } from 'node:fs';
+import { parseSizeInput } from './utils/generalUtils';
 import {
   getFilesAndDirectories,
   filterFiles,
@@ -14,7 +15,22 @@ import path from 'path';
 (async () => {
   try {
     const dirPath = args.dirPath;
-    const recursive = true;
+    //args demo parameters
+    const recursive = false;
+    const minSize = parseSizeInput('2B');
+    const maxSize = parseSizeInput('1MB');
+    const fromDate = new Date('2023-08-22');
+    const toDate = new Date('2023-08-23');
+
+    const filterOptions = {
+      minSize: minSize,
+      maxSize: maxSize,
+      fromDate: fromDate,
+      toDate: toDate,
+    };
+
+    // -e, --extensions <ext1,ext2> Filter files by the specified extensions
+    // -x, --exclude <path>        Exclude the specified file or directory from cleanup
 
     if (!existsSync(dirPath)) {
       console.log('Directory does not exist');
@@ -28,14 +44,17 @@ import path from 'path';
       const { subDirNames, fileNames } = await getFilesAndDirectories(dirPath);
 
       //filter files and directories
-      const filteredFilePaths = await filterFiles(fileNames, dirPath);
-
-      const markedFiles = await markToDelete(dirPath, filteredFilePaths);
+      const filteredFilePaths = await filterFiles(
+        fileNames,
+        dirPath,
+        filterOptions,
+      );
+      // const markedFiles = await markToDelete(dirPath, filteredFilePaths);
 
       //display preview
-
+      // -a, --auto  Automatically remove files without preview
       //delete markedFiles on confirmation
-      await deleteFiles(dirPath, markedFiles);
+      // await deleteFiles(dirPath, markedFiles);
     } else {
       // recursive Case
       //get filtered files from all current state & subdires
@@ -50,6 +69,7 @@ import path from 'path';
       const markedFiles = await markToDelete(dirPath, filteredFiles);
 
       //preview
+      // -a, --auto                  Automatically remove files without preview
       //delete
       await deleteFiles(dirPath, markedFiles);
     }
