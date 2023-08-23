@@ -6,14 +6,15 @@ import {
   filterFiles,
   deleteFiles,
 } from './utils/fileUtils';
-import { hashFile } from './utils/hashUtils';
+
+import { markToDelete, filterAndListFiles } from './cleanup';
 
 import path from 'path';
 
 (async () => {
   try {
     const dirPath = args.dirPath;
-    const recursive = false;
+    const recursive = true;
 
     if (!existsSync(dirPath)) {
       console.log('Directory does not exist');
@@ -29,31 +30,30 @@ import path from 'path';
       //filter files and directories
       const filteredFiles = await filterFiles(fileNames, dirPath);
 
-      //calculate hash and mark common for deletion
-      const fileHashMapping = new Map();
+      const markedFiles = await markToDelete(dirPath, filteredFiles);
 
-      //path array
-      const markedFiles: string[] = [];
-
-      for (const file of filteredFiles) {
-        const filePath = `${dirPath}/${file}`;
-        const hash = await hashFile(filePath);
-
-        if (fileHashMapping.has(hash)) {
-          //mark
-          markedFiles.push(filePath);
-        } else {
-          fileHashMapping.set(hash, filePath);
-        }
-      }
-
-      console.log(markedFiles);
       //display preview
 
       //delete markedFiles on confirmation
       await deleteFiles(dirPath, markedFiles);
     } else {
-      // handle recursive case
+      // recursive Case
+      //get filtered files from all current state & subdires
+
+      //file names
+      const filteredFiles: string[] = [];
+
+      await filterAndListFiles(dirPath, filteredFiles);
+
+      console.log(filteredFiles);
+      //mark for deletion
+
+      // const markedFiles = await markToDelete(dirPath, filteredFiles);
+
+      //preview
+      //delete
+
+      //await deleteFiles(dirPath, markedFiles);
     }
   } catch (error) {
     console.error('An error occurred:', error);
