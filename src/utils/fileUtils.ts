@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import { existsSync } from 'node:fs';
 import { listCleanUp } from '../types/list_type';
+import { fileHash } from '../types/fileHash_type';
 
 export const getFilesAndDirectories = async (
   dirPath: string,
@@ -27,5 +28,38 @@ export const getFilesAndDirectories = async (
   } catch (err) {
     console.log('Error: ', err);
     throw err;
+  }
+};
+
+export const createFile = async (filePath: string, content: string) => {
+  try {
+    await fs.writeFile(filePath, content);
+  } catch (error) {
+    throw new Error(`Failed to create file at ${filePath}: ${error}`);
+  }
+};
+
+export const deleteFiles = async (parentPath: string, files: string[]) => {
+  try {
+    // Implementation to delete files
+    files.forEach(async (file) => {
+      await fs.unlink(file);
+    });
+    console.log('Cleanup completed Successfully!');
+  } catch (error) {
+    throw new Error(`Failed to delete files in ${parentPath}: ${error}`);
+  }
+};
+
+export const filterFiles = async (files: string[], dirPath: string) => {
+  try {
+    const filteredFiles: string[] = [];
+    for (const file of files) {
+      const filePath = `${dirPath}/${file}`;
+      // filter and push files pending
+    }
+    return files;
+  } catch (error) {
+    throw new Error(`Failed to filter files in ${dirPath}: ${error}`);
   }
 };

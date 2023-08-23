@@ -1,16 +1,18 @@
 import args from './utils/yargsUtil';
 import fs from 'fs/promises';
 import { existsSync } from 'node:fs';
-import { getFilesAndDirectories } from './utils/fileUtils';
+import {
+  getFilesAndDirectories,
+  filterFiles,
+  deleteFiles,
+} from './utils/fileUtils';
 import { hashFile } from './utils/hashUtils';
-import { fileHash } from './types/fileHash_type';
+
 import path from 'path';
 
 (async () => {
   try {
     const dirPath = args.dirPath;
-    const structurePath =
-      'C:/Users/nitin/OneDrive/Desktop/Dev/FileCleanupAssistant/src/metadata/structure.json';
     const recursive = false;
 
     if (!existsSync(dirPath)) {
@@ -18,38 +20,38 @@ import path from 'path';
       return;
     }
 
-    // non recursive
+    // non recursive [Todo : filter logic , preview structure ]
     if (!recursive) {
       const dirName = path.basename(dirPath);
-      // get files Path and file names
+      // get list of the files
       const { subDirNames, fileNames } = await getFilesAndDirectories(dirPath);
 
-      // Work -- Calc Hashes for every filePath using streams and write to json
+      //filter files and directories
+      const filteredFiles = await filterFiles(fileNames, dirPath);
 
-      const fileHashMapping: fileHash[] = [];
-      for (const file of fileNames) {
+      //calculate hash and mark common for deletion
+      const fileHashMapping = new Map();
+
+      //path array
+      const markedFiles: string[] = [];
+
+      for (const file of filteredFiles) {
         const filePath = `${dirPath}/${file}`;
         const hash = await hashFile(filePath);
 
-        fileHashMapping.push({ fileName: file, hash });
+        if (fileHashMapping.has(hash)) {
+          //mark
+          markedFiles.push(filePath);
+        } else {
+          fileHashMapping.set(hash, filePath);
+        }
       }
 
-      // in non recursive we do not include subdirectories
-      const subDirectories = {};
-      // write hashes to json
-      const fileHandle = await fs.open(structurePath, 'w');
+      console.log(markedFiles);
+      //display preview
 
-      const heirarchy = {
-        dirName: {
-          files: fileHashMapping,
-          subDirectories: {},
-        },
-      };
-
-      fileHandle.write(Buffer.from(JSON.stringify(heirarchy)));
-
-      fileHandle.close();
-      // rest later
+      //delete markedFiles on confirmation
+      await deleteFiles(dirPath, markedFiles);
     } else {
       // handle recursive case
     }
