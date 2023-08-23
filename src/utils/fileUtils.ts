@@ -56,9 +56,10 @@ export const filterFiles = async (files: string[], dirPath: string) => {
     const filteredFiles: string[] = [];
     for (const file of files) {
       const filePath = `${dirPath}/${file}`;
+      filteredFiles.push(filePath);
       // filter and push files pending
     }
-    return files;
+    return filteredFiles;
   } catch (error) {
     throw new Error(`Failed to filter files in ${dirPath}: ${error}`);
   }

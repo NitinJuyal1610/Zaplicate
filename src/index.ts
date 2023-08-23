@@ -28,9 +28,9 @@ import path from 'path';
       const { subDirNames, fileNames } = await getFilesAndDirectories(dirPath);
 
       //filter files and directories
-      const filteredFiles = await filterFiles(fileNames, dirPath);
+      const filteredFilePaths = await filterFiles(fileNames, dirPath);
 
-      const markedFiles = await markToDelete(dirPath, filteredFiles);
+      const markedFiles = await markToDelete(dirPath, filteredFilePaths);
 
       //display preview
 
@@ -39,21 +39,19 @@ import path from 'path';
     } else {
       // recursive Case
       //get filtered files from all current state & subdires
-
       //file names
       const filteredFiles: string[] = [];
 
       await filterAndListFiles(dirPath, filteredFiles);
 
       console.log(filteredFiles);
-      //mark for deletion
 
-      // const markedFiles = await markToDelete(dirPath, filteredFiles);
+      //mark for deletion
+      const markedFiles = await markToDelete(dirPath, filteredFiles);
 
       //preview
       //delete
-
-      //await deleteFiles(dirPath, markedFiles);
+      await deleteFiles(dirPath, markedFiles);
     }
   } catch (error) {
     console.error('An error occurred:', error);
