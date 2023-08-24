@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import { filterOptions, listCleanUp } from '../types/cleanup_types';
 import path from 'path';
+import chalk from 'chalk';
 
 export const getFilesAndDirectories = async (
   dirPath: string,
@@ -44,9 +45,8 @@ export const deleteFiles = async (parentPath: string, files: string[]) => {
     files.forEach(async (file) => {
       await fs.unlink(file);
     });
-    console.log('Cleanup completed Successfully!');
+    console.log(chalk.green('Cleanup completed Successfully!'));
   } catch (error) {
     throw new Error(`Failed to delete files in ${parentPath}: ${error}`);
   }
 };
-

@@ -4,7 +4,52 @@ import { filterOptions } from './types/cleanup_types';
 import { existsSync } from 'fs';
 import path from 'path';
 import { getFilesAndDirectories, deleteFiles } from './utils/fileUtils';
-import { parseSizeInput } from './utils/generalUtils';
+import chalk from 'chalk';
+import { bytesToSize } from './utils/generalUtils';
+import Table from 'cli-table3';
+import inquirer from 'inquirer';
+
+//
+const displayPreview = async (markedFiles: string[], rootDir: string) => {
+  const table = new Table({
+    head: [
+      chalk.bold.blue('File Path'),
+      chalk.bold.blue('Size'),
+      chalk.bold.blue('Date Modified'),
+    ],
+    colWidths: [45, 15, 15],
+  });
+
+  for (const filePath of markedFiles) {
+    const fileStats = await fs.stat(filePath);
+    const modifiedDate = fileStats.mtime.toISOString().substring(0, 10);
+    const fileSize = bytesToSize(fileStats.size);
+
+    const relativePath = path.relative(rootDir, filePath);
+
+    table.push([
+      chalk.redBright(relativePath),
+      chalk.yellowBright(fileSize),
+      chalk.green(modifiedDate),
+    ]);
+  }
+
+  console.log(table.toString());
+};
+
+//
+
+const userConfirmation = async () => {
+  const answer = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'confirm',
+      message: 'Are you sure you want to delete these files ?',
+    },
+  ]);
+
+  return answer.confirm;
+};
 
 export const markToDelete = async (
   dirPath: string,
@@ -59,11 +104,13 @@ export const filterAndListFiles = async (
       fileStats.size <= filterOptions.maxSize &&
       modifiedDate >= filterOptions.fromDate.toISOString().substring(0, 10) &&
       modifiedDate <= filterOptions.toDate.toISOString().substring(0, 10) &&
-      filterOptions.extensions.includes(fileExtension)
+      (filterOptions.extensions.includes(fileExtension) ||
+        filterOptions.extensions.includes('*'))
     ) {
       filteredFiles.push(filePath);
     }
   }
+
   //for every subfolder call this function again
   for (const subDir of subDirNames) {
     const subDirPath = `${dirPath}/${subDir}`;
@@ -108,14 +155,12 @@ export const filterFiles = async (
 
 export const main = async (filterOptions: filterOptions) => {
   try {
-    console.log(filterOptions);
-    // -x, --exclude <path>        Exclude the specified file or directory from cleanup
+    // -x, --exclude <path>  Exclude the specified file or directory from cleanup
     if (!existsSync(filterOptions.dirPath)) {
       console.log('Directory does not exist');
       return;
     }
 
-    // non recursive [Todo : preview structure ]
     if (!filterOptions.recursive) {
       const dirName = path.basename(filterOptions.dirPath);
       // get list of the files
@@ -135,16 +180,19 @@ export const main = async (filterOptions: filterOptions) => {
         filteredFilePaths,
       );
 
-      console.log(markedFiles);
-
       //display preview
-      // -a, --auto  Automatically remove files without preview
-      //delete markedFiles on confirmation
-      // await deleteFiles(filterOptions.dirPath, markedFiles);
+      if (!filterOptions.auto)
+        await displayPreview(markedFiles, filterOptions.dirPath);
+
+      const answer = await userConfirmation();
+      if (answer) {
+        console.log(chalk.blue('Cleanup in progress...'));
+        // await deleteFiles(filterOptions.dirPath, markedFiles);
+      } else {
+        process.exit(1);
+      }
     } else {
       // recursive Case
-      console.log('Recursive Case');
-      //get filtered files from all current state & subdires
       //file names
       const filteredFiles: string[] = [];
 
@@ -153,16 +201,24 @@ export const main = async (filterOptions: filterOptions) => {
         filteredFiles,
         filterOptions,
       );
+
       //mark for deletion
       const markedFiles = await markToDelete(
         filterOptions.dirPath,
         filteredFiles,
       );
-      console.log(markedFiles);
+
       //preview
-      // -a, --auto                  Automatically remove files without preview
-      //delete
-      // await deleteFiles(filterOptions.dirPath, markedFiles);
+      if (!filterOptions.auto)
+        await displayPreview(markedFiles, filterOptions.dirPath);
+
+      const answer = await userConfirmation();
+      if (answer) {
+        console.log(chalk.blue('Cleanup in progress...'));
+        // await deleteFiles(filterOptions.dirPath, markedFiles);
+      } else {
+        process.exit(1);
+      }
     }
   } catch (error) {
     console.error('An error occurred:', error);

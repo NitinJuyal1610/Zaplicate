@@ -57,6 +57,7 @@ yargs(hideBin(process.argv))
         toDate: new Date(args['t']),
         extensions: args.extensions,
         dirPath: directoryPath,
+        auto: args['a'],
       };
 
       await main(filterOptions);

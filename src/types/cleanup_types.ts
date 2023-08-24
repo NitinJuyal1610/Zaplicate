@@ -16,4 +16,5 @@ export interface filterOptions {
   extensions: string[];
   dirPath: string;
   recursive: boolean;
+  auto: boolean;
 }
