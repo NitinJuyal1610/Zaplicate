@@ -14,4 +14,6 @@ export interface filterOptions {
   fromDate: Date;
   toDate: Date;
   extensions: string[];
+  dirPath: string;
+  recursive: boolean;
 }

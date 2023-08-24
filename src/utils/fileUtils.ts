@@ -50,33 +50,3 @@ export const deleteFiles = async (parentPath: string, files: string[]) => {
   }
 };
 
-export const filterFiles = async (
-  files: string[],
-  dirPath: string,
-  filterOptions: filterOptions,
-) => {
-  try {
-    const filteredFiles: string[] = [];
-    for (const file of files) {
-      const filePath = `${dirPath}/${file}`;
-      const fileStats = await fs.stat(filePath);
-      const modifiedDate = fileStats.mtime.toISOString().substring(0, 10);
-      const fileExtension = path.extname(filePath);
-
-      if (
-        fileStats.size >= filterOptions.minSize &&
-        fileStats.size <= filterOptions.maxSize &&
-        modifiedDate >= filterOptions.fromDate.toISOString().substring(0, 10) &&
-        modifiedDate <= filterOptions.toDate.toISOString().substring(0, 10) &&
-        filterOptions.extensions.includes(fileExtension)
-      ) {
-        filteredFiles.push(filePath);
-      }
-
-      // filter and push files pending
-    }
-    return filteredFiles;
-  } catch (error) {
-    throw new Error(`Failed to filter files in ${dirPath}: ${error}`);
-  }
-};

@@ -1,78 +1,73 @@
-import args from './utils/yargsUtil';
-import fs from 'fs/promises';
+#!/usr/bin/env node
 import { existsSync } from 'node:fs';
 import { parseSizeInput } from './utils/generalUtils';
-import {
-  getFilesAndDirectories,
-  filterFiles,
-  deleteFiles,
-} from './utils/fileUtils';
+import chalk from 'chalk';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { commandBuilder } from './metadata/builder';
+import { dateIsValid } from './utils/generalUtils';
+import { main } from './cleanup';
 
-import { markToDelete, filterAndListFiles } from './cleanup';
+const TITLE = chalk.bold.cyan('Cleanup Assistant');
+const MAIN_CMD = chalk.bold.magenta('cleanup-assistant');
 
-import path from 'path';
+enum Command {
+  CLEAN = 'clean',
+}
 
-(async () => {
-  try {
-    const dirPath = args.dirPath;
-    //args demo parameters
-    const recursive = true;
-    const minSize = parseSizeInput('2B');
-    const maxSize = parseSizeInput('1MB');
-    const fromDate = new Date('2023-08-22');
-    const toDate = new Date('2023-08-23');
-    const extensions = ['.txt', '.png', '.js'];
+yargs(hideBin(process.argv))
+  .usage(TITLE)
+  .scriptName(MAIN_CMD)
+  .command({
+    command: `${Command.CLEAN} [options]`,
+    describe: chalk.green(
+      '🧹 Start the cleanup process for the specified directory',
+    ),
+    aliases: chalk.yellow('c'),
+    builder: commandBuilder,
+    handler: async (args) => {
+      // Validate directory existence
+      const directoryPath = args['l'] || process.cwd();
+      if (!existsSync(directoryPath)) {
+        console.error(
+          chalk.red(`Error: Directory '${directoryPath}' does not exist.`),
+        );
+        process.exit(1);
+      }
 
-    const filterOptions = {
-      minSize: minSize,
-      maxSize: maxSize,
-      fromDate: fromDate,
-      toDate: toDate,
-      extensions: extensions,
-    };
+      // Validate size format and values
+      const minSize = parseSizeInput(args['s']);
+      const maxSize = parseSizeInput(args['S']);
+      if (minSize === null || maxSize === null || minSize > maxSize) {
+        console.error(chalk.red('Error: Invalid size options.'));
+        process.exit(1);
+      }
 
-    // -x, --exclude <path>        Exclude the specified file or directory from cleanup
+      //validate date
+      if (!dateIsValid(args['f']) || !dateIsValid(args['t'])) {
+        console.error(chalk.red('Error: Invalid date options.'));
+        process.exit(1);
+      }
 
-    if (!existsSync(dirPath)) {
-      console.log('Directory does not exist');
-      return;
-    }
+      const filterOptions = {
+        recursive: args.recursive,
+        minSize: minSize,
+        maxSize: maxSize,
+        fromDate: new Date(args['f']),
+        toDate: new Date(args['t']),
+        extensions: args.extensions,
+        dirPath: directoryPath,
+      };
 
-    // non recursive [Todo : preview structure ]
-    if (!recursive) {
-      const dirName = path.basename(dirPath);
-      // get list of the files
-      const { subDirNames, fileNames } = await getFilesAndDirectories(dirPath);
+      await main(filterOptions);
+    },
+  })
+  .showHelpOnFail(true)
+  .help()
+  .wrap(null)
+  .strict().argv;
 
-      //filter files and directories
-      const filteredFilePaths = await filterFiles(
-        fileNames,
-        dirPath,
-        filterOptions,
-      );
-
-      console.log(filteredFilePaths);
-      const markedFiles = await markToDelete(dirPath, filteredFilePaths);
-
-      //display preview
-      // -a, --auto  Automatically remove files without preview
-      //delete markedFiles on confirmation
-      await deleteFiles(dirPath, markedFiles);
-    } else {
-      // recursive Case
-      //get filtered files from all current state & subdires
-      //file names
-      const filteredFiles: string[] = [];
-
-      await filterAndListFiles(dirPath, filteredFiles, filterOptions);
-      //mark for deletion
-      const markedFiles = await markToDelete(dirPath, filteredFiles);
-      //preview
-      // -a, --auto                  Automatically remove files without preview
-      //delete
-      await deleteFiles(dirPath, markedFiles);
-    }
-  } catch (error) {
-    console.error('An error occurred:', error);
-  }
-})();
+// Display general usage information if no command is provided
+if (process.argv.length <= 2) {
+  yargs.showHelp();
+}
