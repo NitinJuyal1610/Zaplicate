@@ -45,7 +45,6 @@ export const deleteFiles = async (parentPath: string, files: string[]) => {
     files.forEach(async (file) => {
       await fs.unlink(file);
     });
-    console.log(chalk.green('Cleanup completed Successfully!'));
   } catch (error) {
     throw new Error(`Failed to delete files in ${parentPath}: ${error}`);
   }

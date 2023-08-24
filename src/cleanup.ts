@@ -34,6 +34,11 @@ const displayPreview = async (markedFiles: string[], rootDir: string) => {
     ]);
   }
 
+  console.log(
+    chalk.bold.red('Total File to be cleaned: ').padStart(35),
+    markedFiles.length,
+  );
+
   console.log(table.toString());
 };
 
@@ -180,14 +185,19 @@ export const main = async (filterOptions: filterOptions) => {
         filteredFilePaths,
       );
 
+      if (markedFiles.length == 0) {
+        console.log(chalk.green('No files to be cleaned 🫗'));
+        return;
+      }
       //display preview
       if (!filterOptions.auto)
         await displayPreview(markedFiles, filterOptions.dirPath);
 
       const answer = await userConfirmation();
       if (answer) {
-        console.log(chalk.blue('Cleanup in progress...'));
+        console.log(chalk.blue('Cleanup in progress... ⏳'));
         // await deleteFiles(filterOptions.dirPath, markedFiles);
+        console.log(chalk.green('Cleanup completed Successfully ✅'));
       } else {
         process.exit(1);
       }
@@ -208,14 +218,24 @@ export const main = async (filterOptions: filterOptions) => {
         filteredFiles,
       );
 
+      if (markedFiles.length == 0) {
+        console.log(chalk.green('No files to be cleaned 🫗'));
+        return;
+      }
+
       //preview
       if (!filterOptions.auto)
         await displayPreview(markedFiles, filterOptions.dirPath);
 
       const answer = await userConfirmation();
       if (answer) {
-        console.log(chalk.blue('Cleanup in progress...'));
+        console.log(chalk.blue('Cleanup in progress... ⌛'));
         // await deleteFiles(filterOptions.dirPath, markedFiles);
+        console.log(
+          chalk.green('Cleanup completed Successfully ✅'),
+          'Total files cleaned:',
+          markedFiles.length,
+        );
       } else {
         process.exit(1);
       }
