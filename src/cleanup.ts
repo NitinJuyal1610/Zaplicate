@@ -56,7 +56,34 @@ const userConfirmation = async () => {
   return answer.confirm;
 };
 
-export const markToDelete = async (
+const exclusionPrompt = async (): Promise<string[]> => {
+  try {
+    const answer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Do you want to specify any exclusions? ',
+      },
+      {
+        type: 'input',
+        name: 'exclude',
+        message: 'Enter files or directories to exclude (comma-separated):',
+        when: (answers) => answers.confirm, // Show only if the user confirmed earlier
+      },
+    ]);
+
+    if (!answer.confirm) {
+      return [];
+    }
+    return answer.exclude.split(',').map((item: string) => item.trim());
+  } catch (error) {
+    // Handle any errors that occur during the prompt
+    console.error(error);
+    return [];
+  }
+};
+
+const markToDelete = async (
   dirPath: string,
   filteredFiles: string[],
 ): Promise<string[]> => {
@@ -89,7 +116,7 @@ export const markToDelete = async (
 };
 
 //recursive function
-export const filterAndListFiles = async (
+const filterAndListFiles = async (
   dirPath: string,
   filteredFiles: string[],
   filterOptions: filterOptions,
@@ -126,7 +153,7 @@ export const filterAndListFiles = async (
 };
 
 //non-recursive
-export const filterFiles = async (
+const filterFiles = async (
   files: string[],
   dirPath: string,
   filterOptions: filterOptions,
@@ -158,9 +185,25 @@ export const filterFiles = async (
   }
 };
 
+const applyExclusion = (
+  exclusions: string[],
+  dirPath: string,
+  markedFiles: string[],
+): string[] => {
+  return markedFiles.filter((filePath) => {
+    const relativePath = path.relative(dirPath, filePath);
+
+    return !exclusions.some((exclusion) => {
+      return (
+        relativePath === exclusion ||
+        relativePath.startsWith(exclusion + path.sep)
+      );
+    });
+  });
+};
+
 export const main = async (filterOptions: filterOptions) => {
   try {
-    // -x, --exclude <path>  Exclude the specified file or directory from cleanup
     if (!existsSync(filterOptions.dirPath)) {
       console.log('Directory does not exist');
       return;
@@ -180,7 +223,7 @@ export const main = async (filterOptions: filterOptions) => {
         filterOptions,
       );
 
-      const markedFiles = await markToDelete(
+      let markedFiles = await markToDelete(
         filterOptions.dirPath,
         filteredFilePaths,
       );
@@ -193,10 +236,27 @@ export const main = async (filterOptions: filterOptions) => {
       if (!filterOptions.auto)
         await displayPreview(markedFiles, filterOptions.dirPath);
 
+      const exclusion = await exclusionPrompt();
+      if (exclusion.length > 0) {
+        markedFiles = applyExclusion(
+          exclusion,
+          filterOptions.dirPath,
+          markedFiles,
+        );
+
+        //preview
+        if (!filterOptions.auto)
+          await displayPreview(markedFiles, filterOptions.dirPath);
+
+        if (markedFiles.length == 0) {
+          console.log(chalk.green('No files to be cleaned 🫗'));
+          return;
+        }
+      }
       const answer = await userConfirmation();
       if (answer) {
         console.log(chalk.blue('Cleanup in progress... ⏳'));
-        // await deleteFiles(filterOptions.dirPath, markedFiles);
+        await deleteFiles(filterOptions.dirPath, markedFiles);
         console.log(chalk.green('Cleanup completed Successfully ✅'));
       } else {
         process.exit(1);
@@ -213,7 +273,7 @@ export const main = async (filterOptions: filterOptions) => {
       );
 
       //mark for deletion
-      const markedFiles = await markToDelete(
+      let markedFiles = await markToDelete(
         filterOptions.dirPath,
         filteredFiles,
       );
@@ -227,10 +287,28 @@ export const main = async (filterOptions: filterOptions) => {
       if (!filterOptions.auto)
         await displayPreview(markedFiles, filterOptions.dirPath);
 
+      const exclusion = await exclusionPrompt();
+      if (exclusion.length > 0) {
+        markedFiles = applyExclusion(
+          exclusion,
+          filterOptions.dirPath,
+          markedFiles,
+        );
+
+        //preview
+        if (!filterOptions.auto)
+          await displayPreview(markedFiles, filterOptions.dirPath);
+
+        if (markedFiles.length == 0) {
+          console.log(chalk.green('No files to be cleaned 🫗'));
+          return;
+        }
+      }
+
       const answer = await userConfirmation();
       if (answer) {
         console.log(chalk.blue('Cleanup in progress... ⌛'));
-        // await deleteFiles(filterOptions.dirPath, markedFiles);
+        await deleteFiles(filterOptions.dirPath, markedFiles);
         console.log(
           chalk.green('Cleanup completed Successfully ✅'),
           'Total files cleaned:',
