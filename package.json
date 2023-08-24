@@ -1,31 +1,37 @@
 {
-  "name": "memory-efficient-backup-system",
+  "name": "cleanMate",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start:dev": "npx nodemon",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NitinJuyal1610/Memory-Efficient-Backup-System.git"
+    "url": "git+https://github.com/NitinJuyal1610/cleanMate.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NitinJuyal1610/Memory-Efficient-Backup-System/issues"
+    "url": "https://github.com/NitinJuyal1610/cleanMate/issues"
   },
-  "homepage": "https://github.com/NitinJuyal1610/Memory-Efficient-Backup-System#readme",
+  "bin": {
+    "cleanMate": "dist/index.js"
+  },
+  "homepage": "https://github.com/NitinJuyal1610/cleanMate#readme",
   "devDependencies": {
-    "nodemon": "^3.0.1",
+    "@types/inquirer": "^9.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@types/yargs": "^17.0.24",
     "@types/node": "^20.5.0",
+    "@types/yargs": "^17.0.24",
+    "chalk": "^4.1.0",
+    "cli-table3": "^0.6.3",
+    "inquirer": "^8.2.6",
     "yargs": "^17.7.2"
   }
 }

@@ -1,4 +1,0 @@
-helooooooooooooooooooooooooo;
-uihgfuih;
-isShorthandPropertyAssignment;
-huiahuih;
