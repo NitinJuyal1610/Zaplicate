@@ -95,4 +95,4 @@ Created by **Nj**
 
 ## Demo
 
-![](https://raw.githubusercontent.com/NitinJuyal1610/cleanMate/main/assets/sample.gif)
+![](https://github.com/NitinJuyal1610/Zaplicate/blob/main/assets/sample.gif)
