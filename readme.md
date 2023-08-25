@@ -1,6 +1,8 @@
-# **CleanMate** 🧹
+# **Zaplicate** 🧹
 
-Efficiently clean up your directories with **cleanMate** — a command-line tool packed with features for a streamlined cleanup process.
+Efficiently clean up duplicate file from your directories with **zaplicate** — a command-line tool packed with features for a streamlined cleanup process.
+
+[npm@zaplicate](https://www.npmjs.com/package/zaplicate)
 
 ## **Features**
 
@@ -25,25 +27,29 @@ Efficiently clean up your directories with **cleanMate** — a command-line tool
 7. **Auto Cleaning** 🤖
    Opt for automated cleanup without the preview step. Efficiently remove files based on your defined criteria.
 
+## **Installation**
 
-  
+Install zapmate with npm
 
-Created by Nj
+```
+npm install -g zaplicate
+```
 
 ## **Usage**
 
 To start the cleanup process for a specified directory, use the following command:
 
 ```bash
-cleanup-assistant clean [options]
+zaplicate clean [options]
 ```
+
 ## **Options:**
 
 - `--version`:
-  Show the version number of the cleanup assistant.
+  Show the version number of the zaplicate.
 
 - `--help`:
-  Show help information for the cleanup assistant.
+  Show help information for the zaplicate.
 
 - `-l, --location <directory>`:
   Location of the directory to clean. Use a valid path.
@@ -69,15 +75,20 @@ cleanup-assistant clean [options]
 - `-a, --auto`:
   Automatically remove files without preview.
 
-
 ## **Examples**
 
-1. Clean duplicate file with size larger than equal to 12KB but     
-      lesser than equal to 10MB.  
-   ``cleanMate clean -s 12KB -S 10MB``
+1. Clean duplicate file with size larger than equal to 12KB but  
+    lesser than equal to 10MB.  
+   `zaplicate clean -s 12KB -S 10MB`
 2. Recursively clean the directory with files with extension .txt and .jpg  
-   ``cleanMate clean -r -e .txt .jpg``
-1. Clean duplicate file created after 2023-08-15  
-   ``cleanMate clean -f 2023-08-15``
-1. Clean the directory at location recursively  
-   ``cleanMate clean -l "C:\Users\Desktop\source" -r ``
+   `zaplicate clean -r -e .txt .jpg`
+3. Clean duplicate file created after 2023-08-15  
+   `zaplicate clean -f 2023-08-15`
+4. Clean the directory at location recursively  
+   `zaplicate clean -l "C:\Users\Desktop\source" -r `
+
+Created by **Nj**
+
+## Demo
+
+![](https://raw.githubusercontent.com/NitinJuyal1610/cleanMate/main/assets/demo.gif)

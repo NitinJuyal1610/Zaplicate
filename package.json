@@ -1,5 +1,5 @@
 {
-  "name": "cleanMate",
+  "name": "zaplicate",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -9,18 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NitinJuyal1610/cleanMate.git"
+    "url": "git+https://github.com/NitinJuyal1610/zaplicate.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NitinJuyal1610/cleanMate/issues"
+    "url": "https://github.com/NitinJuyal1610/zaplicate/issues"
   },
   "bin": {
-    "cleanMate": "dist/index.js"
+    "zaplicate": "dist/index.js"
   },
-  "homepage": "https://github.com/NitinJuyal1610/cleanMate#readme",
+  "homepage": "https://github.com/NitinJuyal1610/zaplicate#readme",
   "devDependencies": {
     "@types/inquirer": "^9.0.3",
     "ts-node": "^10.9.1",
