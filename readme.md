@@ -31,6 +31,10 @@ Efficiently clean up duplicate file from your directories with **zaplicate** —
 
 Install zapmate with npm
 
+## **Installation**
+
+Install zapmate with npm
+
 ```
 npm install -g zaplicate
 ```
