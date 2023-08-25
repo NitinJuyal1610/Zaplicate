@@ -8,8 +8,8 @@ import { commandBuilder } from './metadata/builder';
 import { dateIsValid } from './utils/generalUtils';
 import { main } from './cleanup';
 
-const TITLE = chalk.bold.cyan('Cleanup Assistant');
-const MAIN_CMD = chalk.bold.magenta('cleanup-assistant');
+const TITLE = chalk.bold.cyan('CleanMate');
+const MAIN_CMD = chalk.bold.magenta('cleanMate');
 
 enum Command {
   CLEAN = 'clean',
