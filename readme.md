@@ -32,3 +32,70 @@ Efficiently clean up duplicate file from your directories with **cleanMate** —
   
 
 
+
+
+## **Installation**
+
+Install zapmate with npm
+
+```
+npm install -g zaplicate
+```
+  
+
+## **Usage**
+
+To start the cleanup process for a specified directory, use the following command:
+
+```bash
+cleanMate clean [options]
+```
+## **Options:**
+
+- `--version`:
+  Show the version number of the cleanup assistant.
+
+- `--help`:
+  Show help information for the cleanup assistant.
+
+- `-l, --location <directory>`:
+  Location of the directory to clean. Use a valid path.
+
+- `-r, --recursive`:
+  Perform recursive cleanup (including subdirectories).
+
+- `-s, --minSize <size>`:
+  Filter files larger than the specified size. Size format B, KB, MB, GB, TB, e.g., "100KB"
+
+- `-S, --maxSize <size>`:
+  Filter files smaller than the specified size. Size format B, KB, MB, GB, TB, e.g., "10MB".
+
+- `-e, --extensions <extensions>`:
+  Filter files by specified extensions. Provide space seperated extensions , e.g., .txt .jpg .png
+
+- `-f, --from <date>`:
+  Filter files modified from the specified date. Format: "YYYY-MM-DD".
+
+- `-t, --to <date>`:
+  Filter files modified until the specified date. Format: "YYYY-MM-DD".
+
+- `-a, --auto`:
+  Automatically remove files without preview.
+
+
+## **Examples**
+
+1. Clean duplicate file with size larger than equal to 12KB but     
+      lesser than equal to 10MB.  
+   ``cleanMate clean -s 12KB -S 10MB``
+2. Recursively clean the directory with files with extension .txt and .jpg  
+   ``cleanMate clean -r -e .txt .jpg``
+1. Clean duplicate file created after 2023-08-15  
+   ``cleanMate clean -f 2023-08-15``
+1. Clean the directory at location recursively  
+   ``cleanMate clean -l "C:\Users\Desktop\source" -r ``
+
+  
+Created by **Nj** 
+## Demo
+![](https://github.com/NitinJuyal1610/cleanMate/blob/main/assets/demo.gif?raw=true)
