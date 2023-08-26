@@ -12,6 +12,12 @@ jobs:
         with:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
+      # Configure Git author information for the workflow
+      - name: Set up Git
+        run: |
+          git config --global user.email "nitinjuyal1610@gmail.com"
+          git config --global user.name "NitinJuyal1610"
+          git config --global push.default simple
       - run: npm install
       - run: npm version patch
       - run: npm publish
