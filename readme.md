@@ -29,7 +29,7 @@ Efficiently clean up duplicate file from your directories with **zaplicate** —
 
 ## **Installation**
 
-Install zapmate with npm
+Install zaplicate with npm
 
 ## **Installation**
 
